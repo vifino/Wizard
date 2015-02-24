@@ -4,5 +4,5 @@ erl_crash.dump
 *.ez
 *.swp
 *.un~
-config/config.exs
-config/*
+/config/config.exs
+/config/*
