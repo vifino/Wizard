@@ -1,7 +1,7 @@
-_build/
-deps/
+/_build
+/deps
 erl_crash.dump
 *.ez
 *.swp
 *.un~
-config/config.exs
+/config
