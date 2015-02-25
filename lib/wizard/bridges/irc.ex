@@ -56,7 +56,7 @@ defmodule Bridge.IRC do
 				chan = Enum.at(msgdata, 4)
 				msg = Enum.at(msgdata, 5)
 
-				ret = Regex.run(~r/#{bot_name}:(.*)/, msg)
+				ret = Regex.run(command, msg)
 				if ret do
 					command = Commands.find(Enum.at(ret, 1))
 					if command do
