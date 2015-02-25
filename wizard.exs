@@ -21,7 +21,7 @@ command "eval (.*)", fn (speaker, chan, socket, args) ->
 	end
 end
 
-command "reverse me", cmd(String.reverse(&1))
+command "mirror me", cmd(String.reverse(&1))
 
 command "reverse (.*)", cmda(String.reverse(Enum.at(&1,0)))
 
