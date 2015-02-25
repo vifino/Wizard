@@ -65,12 +65,16 @@ defmodule Bridge.IRC do
 						args = Regex.scan(pattern, Enum.at(ret, 1), capture: :all_but_first)
 						args = Enum.filter(args, &((Enum.count &1) > 0))
 
-						if (Enum.count(args) > 0) do
-							result = func.(speaker_name, chan, socket, Enum.at(args, 0))
-						else
-							result = func.(speaker_name, chan, socket)
+						try do
+							if (Enum.count(args) > 0) do
+								result = func.(speaker_name, chan, socket, Enum.at(args, 0))
+							else
+								result = func.(speaker_name, chan, socket)
+							end
+							say(socket, chan, result)
+						rescue
+							e -> say(socket, chan, "Error: #{inspect e}")
 						end
-						say(socket, chan, result)
 					end
 				end
 			end
