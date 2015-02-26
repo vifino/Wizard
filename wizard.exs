@@ -1,4 +1,5 @@
 import Wizard
+import Utils
 
 command "say (.*)", cmda(Enum.at(&1, 0))
 
