@@ -45,4 +45,4 @@ end
 command "die", cmd("You first, #{&1}.")
 command "quit", cmd("Nice try. After you, #{&1}!")
 
-command "<3", cmdn("What is love? Baby, I'll hurt you! Hurt you because I'm a fucking Wizard.")
+command "<3", cmdn("What is love? Baby, I'll hurt you! I'll hurt you because I'm a fucking Wizar.")
