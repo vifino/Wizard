@@ -66,7 +66,7 @@ defmodule Wizard do
 	end
 
 	def owner do
-	  Enum.at(config, 0)
+		Enum.at(config, 0)
 	end
 
 	def serverinfo do

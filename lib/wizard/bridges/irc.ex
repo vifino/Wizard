@@ -18,7 +18,7 @@ defmodule Bridge.IRC do
 	end
 
 	def run(socket) do
-		matcher = ~r/(.*)?\r\n/ 
+		matcher = ~r/(.*)?\r\n/
 		case :gen_tcp.recv(socket, 0) do
 			{ :ok, data } ->
 				res = Regex.scan(matcher, data) |> Enum.map(&(Enum.at(&1, 1)))
@@ -34,7 +34,7 @@ defmodule Bridge.IRC do
 			process(socket, Enum.at(res, item))
 			process(socket, res, item + 1)
 		end
-	end 
+	end
 
 	def process(socket, data) do
 		ping             = ~r/PING/
@@ -113,7 +113,7 @@ defmodule Bridge.IRC do
 			chan = Enum.at(channels, index)
 			IO.puts inspect(chan)
 			join_channel(socket, chan)
-			join_channels(socket, channels, index + 1)		
+			join_channels(socket, channels, index + 1)
 		end
 	end
 

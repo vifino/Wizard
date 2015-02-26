@@ -3,12 +3,12 @@ import Utils
 
 command "say (.*)", cmda(Enum.at(&1, 0))
 
-command "heya", fn (speaker, _chan, _socket) -> 
+command "heya", fn (speaker, _chan, _socket) ->
 	greetings = [
 		"yo", "backatcha", "aight", "hi", "g'day",
 	]
 	greeting = Enum.at greetings, round(:random.uniform ((Enum.count greetings) -1))
-	"#{greeting} #{speaker}" 
+	"#{greeting} #{speaker}"
 end
 
 command "eval (.*)", fn (speaker, chan, socket, args) ->
@@ -30,7 +30,7 @@ command "(.*) suck(.*)", cmdna("Doubt it.")
 
 command "(.*)\\?", fn (_speaker, _chan, _socket, _args) ->
 	responses = [
-		"It is certain.", "It is decidedly so.", "Without a doubt.", "Yes definitely.", "You may rely on it.", 
+		"It is certain.", "It is decidedly so.", "Without a doubt.", "Yes definitely.", "You may rely on it.",
 		"As I see it, yes.", "Most likely.", "Outlook good.", "Yes.", "Signs point to yes.",
 
 		"Reply hazy try again.", "Ask again later.", "Better not tell you now.",
