@@ -8,11 +8,13 @@ defmodule Wizard do
 
     Commands.start_link
 		socket = Bridge.IRC.spawn
-    spawn(Bridge.IRC, :run, [socket])
+    irc_con = Task.async(Bridge.IRC, :run, [socket])
 
     Code.require_file("wizard.exs")
 
     Supervisor.start_link(children, opts)
+
+		Task.await(irc_con, :infinity)
   end
 
   def command(phrase, func) do
