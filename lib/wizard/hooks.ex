@@ -15,30 +15,31 @@ defmodule Hooks do
 		set = Agent.get(@name, fn(set) -> set end)
 		Enum.filter(set, fn ({ pattern, _ }) -> Regex.match?(pattern, phrase) end)
 	end
-	def run(phrase) do
+	@doc "Run all hooks matching `phrase`."
+	def run(socket, phrase) do
 		matching = find phrase
-		exec(phrase, matching)
+		exec(socket, phrase, matching)
 	end
-	def exec(_phrase, found) when found == [] do
+	def exec(_socket, _phrase, found) when found == [] do
 		nil
 	end
-	def exec(phrase, found) do
-		exec(phrase, found, 0)
+	def exec(socket, phrase, found) do
+		exec(socket, phrase, found, 0)
 	end
-	def exec(phrase, found, index, retdata \\ []) do
+	def exec(socket, phrase, found, index, retdata \\ []) do
 		if Enum.at(found, index) do
-			ret = eval(phrase, Enum.at(found, index))
-			retdata = exec(phrase, found, index + 1, Enum.concat(retdata, [ret]))
+			ret = eval(socket, phrase, Enum.at(found, index))
+			retdata = exec(socket, phrase, found, index + 1, Enum.concat(retdata, [ret]))
 		end
 		retdata
 	end
-	def eval(phrase, found)do
+	def eval(socket, phrase, found)do
 		{ regex, fun } = found
 		args = Regex.scan(regex, phrase, capture: :all_but_first) |> Enum.at(0)
 		if (Enum.count(args) > 0) do
-			fun.(phrase, args)
+			fun.(socket, phrase, args)
 		else
-			fun.(phrase)
+			fun.(socket, phrase)
 		end
 	end
 end

@@ -51,9 +51,6 @@ defmodule Bridge.IRC do
 		if Regex.match?(ping, data), do: pong(socket, data)
 
 		if Regex.match?(message_matcher, data) do
-			# bits = String.split(data, ":#{bot_name}:")
-			# phrase = String.strip(Enum.at bits, 1)
-			# { status, nick, real, host, chan, msg } = Regex.run(message_matcher, data)
 			msgdata = Regex.run(message_matcher, data)
 			if Enum.at(msgdata, 0) do
 				speaker_name = Enum.at(msgdata, 1)
@@ -83,14 +80,23 @@ defmodule Bridge.IRC do
 				end
 			end
 		end
+		transmit(socket, Hooks.run(socket, data))
 	end
 
 	@doc "Sends `msg` to the server."
 	def transmit(socket, msg) do
-		IO.puts "-> #{msg}"
-		:gen_tcp.send(socket, "#{msg}\r\n")
+		if is_bitstring msg do
+			IO.puts "-> #{msg}"
+			:gen_tcp.send(socket, "#{msg}\r\n")
+		end
 	end
-
+	@doc "Loops over `msg` and sends the messages containing it."
+	def transmit(socket, msg, index \\ 0) when is_list msg do
+		if Enum.at(msg, index) do
+			transmit(socket, Enum.at(msg, index))
+			transmit(socket, msg, index + 1)
+		end
+	end
 	@doc "Message `msg` to `channel`, which is either a Channel or a User."
 	def msg(socket, channel, msg) do
 		#responder = fn
