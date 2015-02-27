@@ -1,4 +1,6 @@
 defmodule Bridge.IRC do
+	@name { :global, __MODULE__ }
+
 	@doc "Spawns the connection to the server and returns the socket."
 	def spawn() do
 		serverdata = serverinfo
@@ -51,36 +53,40 @@ defmodule Bridge.IRC do
 		if Regex.match?(ping, data), do: pong(socket, data)
 
 		if Regex.match?(message_matcher, data) do
-			msgdata = Regex.run(message_matcher, data)
-			if Enum.at(msgdata, 0) do
-				speaker_name = Enum.at(msgdata, 1)
-				chan = Enum.at(msgdata, 4)
-				content = Enum.at(msgdata, 5)
+			Task.async(fn() ->
+				msgdata = Regex.run(message_matcher, data)
+				if Enum.at(msgdata, 0) do
+					speaker_name = Enum.at(msgdata, 1)
+					chan = Enum.at(msgdata, 4)
+					content = Enum.at(msgdata, 5)
 
-				ret = Regex.run(command, content)
-				if ret do
-					command = Commands.find(Enum.at(ret, 1))
-					if command do
-						pattern = elem(command, 0)
-						func = elem(command, 1)
-						args = Regex.scan(pattern, Enum.at(ret, 1), capture: :all_but_first)
-						args = Enum.filter(args, &((Enum.count &1) > 0))
+					ret = Regex.run(command, content)
+					if ret do
+						command = Commands.find(Enum.at(ret, 1))
+						if command do
+							pattern = elem(command, 0)
+							func = elem(command, 1)
+							args = Regex.scan(pattern, Enum.at(ret, 1), capture: :all_but_first)
+							args = Enum.filter(args, &((Enum.count &1) > 0))
 
-						try do
-							if (Enum.count(args) > 0) do
-								result = func.(speaker_name, chan, socket, Enum.at(args, 0))
-							else
-								result = func.(speaker_name, chan, socket)
+							try do
+								if (Enum.count(args) > 0) do
+									result = func.(speaker_name, chan, socket, Enum.at(args, 0))
+								else
+									result = func.(speaker_name, chan, socket)
+								end
+								msg(socket, chan, result)
+							rescue
+								e -> msg(socket, chan, "Error: #{inspect e}")
 							end
-							msg(socket, chan, result)
-						rescue
-							e -> msg(socket, chan, "Error: #{inspect e}")
 						end
 					end
 				end
-			end
+			end)
 		end
-		transmit(socket, Hooks.run(socket, data))
+		Task.async(fn() ->
+			transmit(socket, Hooks.run(socket, data))
+		end)
 	end
 
 	@doc "Sends `msg` to the server."
