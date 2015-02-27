@@ -39,15 +39,17 @@ defmodule Bridge.IRC do
 	end
 
 	def process(socket, data) do
-		ping             = ~r/PING/
-		motd_end         = ~r/\/MOTD/
+		ping             = ~r/^PING/
+		motd_end         = ~r/^:(.*?) 376 (.*?)\/MOTD/
 		{ :ok, command } = Regex.compile("^#{bot_name}: (.*)$")
 		message_matcher  = ~r/^:(.*?)!(.*?)@(.*?) PRIVMSG (.*?) :(.*)$/
 
 		IO.puts "<- #{data}"
 
 		if Regex.match?(motd_end, data), do: initialize(socket, channel_data, 0)
+
 		if Regex.match?(ping, data), do: pong(socket, data)
+
 		if Regex.match?(message_matcher, data) do
 			# bits = String.split(data, ":#{bot_name}:")
 			# phrase = String.strip(Enum.at bits, 1)
