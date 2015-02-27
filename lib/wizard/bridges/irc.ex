@@ -118,7 +118,6 @@ defmodule Bridge.IRC do
 	def join_channels(socket, channels, index \\ 0) do
 		if Enum.at(channels, index) do
 			chan = Enum.at(channels, index)
-			IO.puts inspect(chan)
 			join_channel(socket, chan)
 			join_channels(socket, channels, index + 1)
 		end
