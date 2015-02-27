@@ -1,11 +1,13 @@
 defmodule Wizard do
   use Application
-  
+
 	@doc "Start the IRC Connection."
 	def start(_type, _args) do
     import Supervisor.Spec, warn: false
     children = []
     opts = [strategy: :one_for_one, name: Wizard.Supervisor]
+
+    Utils.reseed_rng
 
     Commands.start_link
     Hooks.start_link

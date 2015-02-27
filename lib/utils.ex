@@ -1,6 +1,6 @@
 defmodule Utils do
 	@compile {:inline}
-	@on_load :reseed_rng
+	#@on_load :reseed_rng
 
   def reseed_rng do
     :random.seed(:os.timestamp())
