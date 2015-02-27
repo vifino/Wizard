@@ -1,4 +1,5 @@
 defmodule Bridge.IRC do
+	@doc "Spawns the connection to the server and returns the socket."
 	def spawn() do
 		serverdata = serverinfo
 		server     = elem(serverdata, 0)
@@ -17,6 +18,7 @@ defmodule Bridge.IRC do
 		socket
 	end
 
+	@doc "Main processing loopMain processing loop.."
 	def run(socket) do
 		matcher = ~r/(.*)?\r\n/
 		case :gen_tcp.recv(socket, 0) do
@@ -54,9 +56,9 @@ defmodule Bridge.IRC do
 			if Enum.at(msgdata, 0) do
 				speaker_name = Enum.at(msgdata, 1)
 				chan = Enum.at(msgdata, 4)
-				msg = Enum.at(msgdata, 5)
+				content = Enum.at(msgdata, 5)
 
-				ret = Regex.run(command, msg)
+				ret = Regex.run(command, content)
 				if ret do
 					command = Commands.find(Enum.at(ret, 1))
 					if command do
@@ -71,9 +73,9 @@ defmodule Bridge.IRC do
 							else
 								result = func.(speaker_name, chan, socket)
 							end
-							say(socket, chan, result)
+							msg(socket, chan, result)
 						rescue
-							e -> say(socket, chan, "Error: #{inspect e}")
+							e -> msg(socket, chan, "Error: #{inspect e}")
 						end
 					end
 				end
@@ -81,29 +83,26 @@ defmodule Bridge.IRC do
 		end
 	end
 
+	@doc "Sends `msg` to the server."
 	def transmit(socket, msg) do
 		IO.puts "-> #{msg}"
 		:gen_tcp.send(socket, "#{msg}\r\n")
 	end
 
-	def say(socket, channel, msg) do
+	@doc "Message `msg` to `channel`, which is either a Channel or a User."
+	def msg(socket, channel, msg) do
 		#responder = fn
 		#	{ channel } -> transmit(socket, "PRIVMSG #{channel} :#{msg}")
 		#	{ channel, password } -> transmit(socket, "PRIVMSG #{channel} :#{msg}")
 		#end
 
-		#responder.(channel)
 		transmit(socket, "PRIVMSG #{channel} :#{msg}")
 	end
 
 	def initialize(socket, channels, index) do
 		serverdata = serverinfo
 		if elem(serverdata, 4) do # Acc and password is there.
-			:ok = say(socket, "NickServ", "identify #{elem(serverdata, 3)} #{elem(serverdata, 4)}")
-		#else
-		#	if elem(serverdata, 3) do
-		#		:ok = transmit(socket, "PASS :#{elem(serverdata, 3)}")
-		#	end
+			:ok = msg(socket, "NickServ", "identify #{elem(serverdata, 3)} #{elem(serverdata, 4)}")
 		end
 		join_channels(socket, channels, index)
 	end
@@ -120,7 +119,7 @@ defmodule Bridge.IRC do
 	def join_channel(socket, chan) do
 		tmp = chan
 		joiner = fn
-			{ channel } ->  transmit(socket, "JOIN #{ channel }")
+			{ channel } -> transmit(socket, "JOIN #{ channel }")
 			{ channel, password } -> transmit(socket, "JOIN #{ channel } #{ password }")
 		end
 		if is_bitstring tmp do
