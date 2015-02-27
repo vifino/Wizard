@@ -8,6 +8,7 @@ defmodule Wizard do
     opts = [strategy: :one_for_one, name: Wizard.Supervisor]
 
     Commands.start_link
+    Hooks.start_link
 		socket = Bridge.IRC.spawn
     irc_con = Task.async(Bridge.IRC, :run, [socket])
 
@@ -22,6 +23,12 @@ defmodule Wizard do
   def command(phrase, func) do
       { :ok, pattern } = Regex.compile(phrase)
       Commands.add({ pattern, func })
+  end
+
+  @doc "Runs `func` if `phrase` matches a received line. (Does not match \"PRIVMSG\"'s or \"PING\"'s)"
+  def hook(phrase, func) do
+      { :ok, pattern } = Regex.compile(phrase)
+      Hooks.add({ pattern, func })
   end
 
 	@doc "Macro for creating `func` for `command`. Behaves like `&`. `&1` is the `speaker`."
