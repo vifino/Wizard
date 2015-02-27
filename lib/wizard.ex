@@ -1,6 +1,6 @@
 defmodule Wizard do
   use Application
-
+  
 	@doc "Start the IRC Connection."
 	def start(_type, _args) do
     import Supervisor.Spec, warn: false

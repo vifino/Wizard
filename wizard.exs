@@ -7,7 +7,7 @@ command "heya", fn (speaker, _chan, _socket) ->
 	greetings = [
 		"yo", "backatcha", "aight", "hi", "g'day",
 	]
-	greeting = Enum.at greetings, round(:random.uniform ((Enum.count greetings) -1))
+	greeting = Enum.at greetings, round(rng ((Enum.count greetings) -1))
 	"#{greeting} #{speaker}"
 end
 
@@ -38,7 +38,7 @@ command "(.*)\\?", fn (_speaker, _chan, _socket, _args) ->
 		"Don't count on it.", "My reply is no.", "My sources say no.",
 		"Outlook not so good.", "Very doubtful.",
 	]
-	Enum.at responses, round(:random.uniform ((Enum.count responses) -1))
+	Enum.at responses, round(rng ((Enum.count responses) -1))
 end
 
 # Funny commands :D
