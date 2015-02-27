@@ -3,7 +3,9 @@ defmodule Utils do
 	#@on_load :reseed_rng
 
   def reseed_rng do
-		:random.seed(:erlang.now)
+		#:random.seed(:erlang.now)
+		<< a :: 32, b :: 32, c :: 32 >> = :crypto.rand_bytes(12)
+		:random.seed(a,b,c)
 		:ok
   end
 
