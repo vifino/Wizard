@@ -54,6 +54,7 @@ defmodule Bridge.IRC do
 
 		if Regex.match?(message_matcher, data) do
 			Task.async(fn() ->
+				Utils.reseed_rng
 				msgdata = Regex.run(message_matcher, data)
 				if Enum.at(msgdata, 0) do
 					speaker_name = Enum.at(msgdata, 1)
@@ -85,6 +86,7 @@ defmodule Bridge.IRC do
 			end)
 		end
 		Task.async(fn() ->
+			Utils.reseed_rng
 			transmit(socket, Hooks.run(socket, data))
 		end)
 	end

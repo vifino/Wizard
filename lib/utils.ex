@@ -3,7 +3,7 @@ defmodule Utils do
 	#@on_load :reseed_rng
 
   def reseed_rng do
-    :random.seed(:os.timestamp())
+		:random.seed(:erlang.now)
 		:ok
   end
 
