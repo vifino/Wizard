@@ -30,6 +30,7 @@ defmodule Bridge.IRC do
 					res = Regex.scan(matcher, data) |> Enum.map(&(Enum.at(&1, 1)))
 					process(socket, res, 0)
 				{ :error, :closed } ->
+					running = false
 					IO.puts "The client closed the connection..."
 			end
 		rescue
@@ -103,10 +104,14 @@ defmodule Bridge.IRC do
 		if is_bitstring msg do
 			IO.puts "-> #{msg}"
 			:gen_tcp.send(socket, "#{msg}\r\n")
+		else
+			if is_list msg do
+				transmit(socket, msg, 0)
+			end
 		end
 	end
 	@doc "Loops over `msg` and sends the messages containing it."
-	def transmit(socket, msg, index \\ 0) when is_list msg do
+	def transmit(socket, msg, index) do
 		if Enum.at(msg, index) do
 			transmit(socket, Enum.at(msg, index))
 			transmit(socket, msg, index + 1)
