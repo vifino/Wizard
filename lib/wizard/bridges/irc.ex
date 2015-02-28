@@ -22,14 +22,21 @@ defmodule Bridge.IRC do
 
 	@doc "Main processing loopMain processing loop.."
 	def run(socket) do
+		running = true
 		matcher = ~r/(.*)?\r\n/
-		case :gen_tcp.recv(socket, 0) do
-			{ :ok, data } ->
-				res = Regex.scan(matcher, data) |> Enum.map(&(Enum.at(&1, 1)))
-				process(socket, res, 0)
-				run(socket)
-			{ :error, :closed } ->
-				IO.puts "The client closed the connection..."
+		try do
+			case :gen_tcp.recv(socket, 0) do
+				{ :ok, data } ->
+					res = Regex.scan(matcher, data) |> Enum.map(&(Enum.at(&1, 1)))
+					process(socket, res, 0)
+				{ :error, :closed } ->
+					IO.puts "The client closed the connection..."
+			end
+		rescue
+			e -> IO.puts inspect(e)
+		end
+		if running do
+			run(socket)
 		end
 	end
 
