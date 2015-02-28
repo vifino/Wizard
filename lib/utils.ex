@@ -23,6 +23,6 @@ defmodule Utils do
 	end
 
 	def sh(pipe_input, command) when is_bitstring pipe_input do
-		to_string(:os.cmd(to_char_list("echo #{inspect pipe_input} | #{command}")))
+		to_string(:os.cmd(to_char_list("echo -n #{inspect pipe_input} | #{command}")))
 	end
 end
