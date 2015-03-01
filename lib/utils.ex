@@ -1,5 +1,5 @@
 defmodule Utils do
-	#@compile {:inline}
+	@compile {:inline}
 	#@on_load :reseed_rng
 
   def reseed_rng do
@@ -25,7 +25,6 @@ defmodule Utils do
 	end
 	@doc "Runs the string `command` as a shell command with `pipe_input` piped into it and returns the result."
 	def sh(pipe_input, command) when is_bitstring(pipe_input) and is_bitstring(command) do
-		#to_string(:os.cmd(to_char_list("echo -n #{inspect pipe_input} | #{command}")))
 		if String.strip(command) != "" do
 			if pipe_input != "" do
 				#'echo -n #{inspect pipe_input} | #{command}' |> :os.cmd |> to_string
