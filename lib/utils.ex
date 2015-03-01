@@ -19,10 +19,19 @@ defmodule Utils do
 
 	@doc "Runs the string `command` as a shell command and returns the result."
 	def sh(command) when is_bitstring command do
-		to_string(:os.cmd(to_char_list(command)))
+		if not String.strip(command) == "" do
+			to_string(:os.cmd(to_char_list(command)))
+		end
 	end
 	@doc "Runs the string `command` as a shell command with `pipe_input` piped into it and returns the result."
 	def sh(pipe_input, command) when is_bitstring(pipe_input) and is_bitstring(command) do
 		to_string(:os.cmd(to_char_list("echo -n #{inspect pipe_input} | #{command}")))
+		if not String.strip(command) == "" do
+			if not String.strip(pipe_input) == "" do
+				'echo -n #{inspect pipe_input} | #{command}' |> :os.cmd |> to_string
+			else
+				sh(command)
+			end
+		end
 	end
 end
