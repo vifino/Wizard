@@ -42,6 +42,10 @@ command "(.*)\\?", fn (_speaker, _chan, _socket, _args) ->
 end
 
 # Funny commands :D
+hook ~r/:(.*?)!(.*?)@(.*) PRIVMSG (.*) :(.*?)kick me(.*?)/i, fn(socket, phrase, args) ->
+	Bridge.IRC.transmit(socket, "KICK #{Enum.at(args, 3)} #{Enum.at(args, 0)} :No problem.")
+end
+
 command "die", cmd("You first, #{&1}.")
 command "quit", cmd("Nice try. After you, #{&1}!")
 

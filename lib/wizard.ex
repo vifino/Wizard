@@ -23,14 +23,22 @@ defmodule Wizard do
 
 	@doc "Adds a command matched by string `phrase`, which is a regex. Runs `func` if it matched."
   def command(phrase, func) do
+    if is_map phrase do
+      Commands.add({ phrase, func })
+    else
       { :ok, pattern } = Regex.compile(phrase)
       Commands.add({ pattern, func })
+    end
   end
 
   @doc "Runs `func` if `phrase` matches a received line. (Does not match \"PRIVMSG\"'s or \"PING\"'s)"
   def hook(phrase, func) do
+    if is_map phrase do
+      Hooks.add({ phrase, func })
+    else
       { :ok, pattern } = Regex.compile(phrase)
       Hooks.add({ pattern, func })
+    end
   end
 
 	@doc "Macro for creating `func` for `command`. Behaves like `&`. `&1` is the `speaker`."
