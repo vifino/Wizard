@@ -54,7 +54,7 @@ defmodule Bridge.IRC do
 		{ :ok, command } = Regex.compile("^#{bot_name}: (.*)$")
 		message_matcher  = ~r/^:(.*?)!(.*?)@(.*?) PRIVMSG (.*?) :(.*)$/
 
-		IO.puts "<-- #{data}"
+		IO.puts "<- #{data}"
 
 		if Regex.match?(motd_end, data), do: initialize(socket, channel_data, 0)
 
@@ -102,7 +102,7 @@ defmodule Bridge.IRC do
 	@doc "Sends `msg` to the server."
 	def transmit(socket, msg) do
 		if is_bitstring msg do
-			IO.puts "--> #{msg}"
+			IO.puts "-> #{msg}"
 			:gen_tcp.send(socket, "#{msg}\r\n")
 		else
 			if is_list msg do
@@ -119,6 +119,11 @@ defmodule Bridge.IRC do
 	end
 	@doc "Message `msg` to `channel`, which is either a Channel or a User."
 	def msg(socket, channel, msg) do
+		#responder = fn
+		#	{ channel } -> transmit(socket, "PRIVMSG #{channel} :#{msg}")
+		#	{ channel, password } -> transmit(socket, "PRIVMSG #{channel} :#{msg}")
+		#end
+
 		transmit(socket, "PRIVMSG #{channel} :#{msg}")
 	end
 

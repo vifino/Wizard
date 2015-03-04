@@ -42,8 +42,22 @@ command "(.*)\\?", fn (_speaker, _chan, _socket, _args) ->
 end
 
 # Funny commands :D
-hook ~r/:(.*?)!(.*?)@(.*) PRIVMSG (.*) :(.*?)kick me(.*?)/i, fn(socket, _phrase, args) ->
+hook ~r/:(.*?)!(.*?)@(.*) PRIVMSG (.*) :(.*?)kick(\s*?)me(.*?)/i, fn(socket, phrase, args) ->
 	Bridge.IRC.transmit(socket, "KICK #{Enum.at(args, 3)} #{Enum.at(args, 0)} :No problem.")
+end
+
+hook ~r/:(.*?)!(.*?)@(.*) PRIVMSG (.*) :(.*?)\a(.*?)/i, fn(socket, phrase, args) ->
+	Bridge.IRC.transmit(socket, "KICK #{Enum.at(args, 3)} #{Enum.at(args, 0)} :Put that BELL up yer arse.")
+end
+
+# Mod commands.
+# Unban: :zsh!zsh@services.esper.net MODE #V +b *!*@host81-158-132-107.range81-158.btcentralplus.com
+hook ~r/^:(.*?)!(.*?)@(.*) MODE (.*) \+b (.*)$/, fn(socket, phrase, args) ->
+	#Task.async(fn(socket, args)-> 
+		:timer.sleep(1000 * 60 * 10)
+		#IO.puts inspect(args)
+		Bridge.IRC.transmit(socket, "MODE #{Enum.at(args, 3)} -b #{Enum.at(args, 4)}")
+	#end, [socket, args])
 end
 
 command "die", cmd("You first, #{&1}.")
