@@ -1,16 +1,16 @@
 defmodule Wizard do
-  use Application
+	use Application
 
 	@doc "Start the IRC Connection."
 	def start(_type, _args) do
-    import Supervisor.Spec, warn: false
-    children = []
-    opts = [strategy: :one_for_one, name: Wizard.Supervisor]
+		import Supervisor.Spec, warn: false
+		children = []
+		opts = [strategy: :one_for_one, name: Wizard.Supervisor]
 
-    Utils.reseed_rng
+		Utils.reseed_rng
 
-    Commands.start_link
-    Hooks.start_link
+		Commands.start_link
+		Hooks.start_link
 		serverdata = Bridge.IRC.serverinfo
 		server     = elem(serverdata, 0)
 		port       = elem(serverdata, 1)
@@ -23,34 +23,34 @@ defmodule Wizard do
 				Bridge.IRC.spawn(server, port, nickname, nil)
 			end
 		end
-    irc_con = Task.async(Bridge.IRC, :run, [socket, nickname])
+		irc_con = Task.async(Bridge.IRC, :run, [socket, nickname])
 
-    Code.require_file("wizard.exs")
+		Code.require_file("wizard.exs")
 
-    Supervisor.start_link(children, opts)
+		Supervisor.start_link(children, opts)
 
 		Task.await(irc_con, :infinity)
-  end
+	end
 
 	@doc "Adds a command matched by string `phrase`, which is a regex. Runs `func` if it matched."
-  def command(phrase, func) do
-    if is_map phrase do
-      Commands.add({ phrase, func })
-    else
-      { :ok, pattern } = Regex.compile(phrase)
-      Commands.add({ pattern, func })
-    end
-  end
+	def command(phrase, func) do
+	  if is_map phrase do
+			Commands.add({ phrase, func })
+	  else
+			{ :ok, pattern } = Regex.compile(phrase)
+			Commands.add({ pattern, func })
+		end
+	end
 
-  @doc "Runs `func` if `phrase` matches a received line. (Does not match \"PRIVMSG\"'s or \"PING\"'s)"
-  def hook(phrase, func) do
-    if is_map phrase do
-      Hooks.add({ phrase, func })
-    else
-      { :ok, pattern } = Regex.compile(phrase)
-      Hooks.add({ pattern, func })
-    end
-  end
+	@doc "Runs `func` if `phrase` matches a received line. (Does not match \"PRIVMSG\"'s or \"PING\"'s)"
+	def hook(phrase, func) do
+		if is_map phrase do
+			Hooks.add({ phrase, func })
+		else
+			{ :ok, pattern } = Regex.compile(phrase)
+			Hooks.add({ pattern, func })
+		end
+	end
 
 	@doc "Macro for creating `func` for `command`. Behaves like `&`. `&1` is the `speaker`."
 	defmacro cmd(shrtfnc) do
