@@ -28,7 +28,7 @@ defmodule Utils do
 		if String.strip(command) != "" do
 			if pipe_input != "" do
 				#'echo -n #{inspect pipe_input} | #{command}' |> :os.cmd |> to_string
-				to_string(:os.cmd('echo -n #{pipe_input} | #{command}'))
+				to_string(:os.cmd('echo -n #{inspect pipe_input} | #{command}'))
 			else
 				sh(command)
 			end
