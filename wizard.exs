@@ -60,6 +60,10 @@ hook ~r/^:(.*?)!(.*?)@(.*) MODE (.*) \+b (.*)$/, fn(socket, phrase, args) ->
 	#end, [socket, args])
 end
 
+hook ~r/^:(.*?)!(.*?)@(.*) KICK (.*?) #{Bridge.IRC.bot_name} :(.*)$/, fn(socket, phrase, args) ->
+	Bridge.IRC.transmit(socket, "JOIN #{Enum.at(args, 3)}")
+end
+
 command "die", cmd("You first, #{&1}.")
 command "quit", cmd("Nice try. After you, #{&1}!")
 
