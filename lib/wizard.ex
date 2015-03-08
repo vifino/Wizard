@@ -11,7 +11,18 @@ defmodule Wizard do
 
     Commands.start_link
     Hooks.start_link
-		socket = Bridge.IRC.spawn
+		serverdata = Bridge.IRC.serverinfo
+		server     = elem(serverdata, 0)
+		port       = elem(serverdata, 1)
+		nickname   = elem(serverdata, 2)
+
+		socket = if elem(serverdata, 3) do
+			if elem(serverdata, 4) == nil do
+				Bridge.IRC.spawn(server, port, nickname, elem(serverdata, 3))
+			else
+				Bridge.IRC.spawn(server, port, nickname, nil)
+			end
+		end
     irc_con = Task.async(Bridge.IRC, :run, [socket])
 
     Code.require_file("wizard.exs")

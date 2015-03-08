@@ -2,33 +2,31 @@ defmodule Bridge.IRC do
 	@name { :global, __MODULE__ }
 
 	@doc "Spawns the connection to the server and returns the socket."
-	def spawn() do
-		serverdata = serverinfo
-		server     = elem(serverdata, 0)
-		port       = elem(serverdata, 1)
-		nickname   = elem(serverdata, 2)
+	def spawn(server, port, nickname, pass) do
+		#serverdata = serverinfo
+		#server     = elem(serverdata, 0)
+		#port       = elem(serverdata, 1)
+		#nickname   = elem(serverdata, 2)
 
 		{ :ok, socket } = :gen_tcp.connect(:erlang.binary_to_list(server), port, [:binary, {:active, false}])
 		:ok = transmit(socket, "NICK #{nickname}")
-		:ok = transmit(socket, "USER #{nickname} #{server} #{bot_name} :#{bot_name}")
-		if elem(serverdata, 3) do
-			if elem(serverdata, 4) == nil do
-				:ok = transmit(socket, "PASS :#{elem(serverdata, 3)}")
-			end
+		:ok = transmit(socket, "USER #{nickname} #{server} #{nickname} :#{nickname}")
+		if pass do
+				:ok = transmit(socket, "PASS :#{pass}")
 		end
 		#run(socket)
 		socket
 	end
 
 	@doc "Main processing loopMain processing loop.."
-	def run(socket) do
+	def run(socket, nick) do
 		running = true
 		matcher = ~r/(.*)?\r\n/
 		try do
 			case :gen_tcp.recv(socket, 0) do
 				{ :ok, data } ->
 					res = Regex.scan(matcher, data) |> Enum.map(&(Enum.at(&1, 1)))
-					process(socket, res, 0)
+					process(socket, res, nick, 0)
 				{ :error, :closed } ->
 					running = false
 					IO.puts "The client closed the connection..."
@@ -37,21 +35,21 @@ defmodule Bridge.IRC do
 			e -> IO.puts inspect(e)
 		end
 		if running do
-			run(socket)
+			run(socket, nick)
 		end
 	end
 
-	def process(socket, res, item) do
+	def process(socket, res, nick, item) do
 		if Enum.at(res, item) do
-			process(socket, Enum.at(res, item))
-			process(socket, res, item + 1)
+			process(socket, Enum.at(res, item, nick), nick)
+			process(socket, res, nick, item + 1)
 		end
 	end
 
-	def process(socket, data) do
+	def process(socket, data, nick) do
 		ping             = ~r/^PING/
 		motd_end         = ~r/^:(.*?) 376 (.*?)\/MOTD/
-		{ :ok, command } = Regex.compile("^#{bot_name}: (.*)$")
+		{ :ok, command } = Regex.compile("^#{nick}: (.*)$")
 		message_matcher  = ~r/^:(.*?)!(.*?)@(.*?) PRIVMSG (.*?) :(.*)$/
 
 		IO.puts "<-- #{data}"
