@@ -42,17 +42,17 @@ command "(.*)\\?", fn (_speaker, _chan, _socket, _args) ->
 end
 
 # Funny commands :D
-hook ~r/:(.*?)!(.*?)@(.*) PRIVMSG (.*) :(.*?)kick(\s*?)me(.*?)/i, fn(socket, phrase, args) ->
+hook ~r/:(.*?)!(.*?)@(.*) PRIVMSG (.*) :(.*?)kick(\s*?)me(.*?)/i, fn(socket, _phrase, args) ->
 	Bridge.IRC.transmit(socket, "KICK #{Enum.at(args, 3)} #{Enum.at(args, 0)} :No problem.")
 end
 
-hook ~r/:(.*?)!(.*?)@(.*) PRIVMSG (.*) :(.*?)\a(.*?)/i, fn(socket, phrase, args) ->
+hook ~r/:(.*?)!(.*?)@(.*) PRIVMSG (.*) :(.*?)\a(.*?)/i, fn(socket, _phrase, args) ->
 	Bridge.IRC.transmit(socket, "KICK #{Enum.at(args, 3)} #{Enum.at(args, 0)} :Put that BELL up yer arse.")
 end
 
 # Mod commands.
 # Unban: :zsh!zsh@services.esper.net MODE #V +b *!*@host81-158-132-107.range81-158.btcentralplus.com
-hook ~r/^:(.*?)!(.*?)@(.*) MODE (.*) \+b (.*)$/, fn(socket, phrase, args) ->
+hook ~r/^:(.*?)!(.*?)@(.*) MODE (.*) \+b (.*)$/, fn(socket, _phrase, args) ->
 	#Task.async(fn(socket, args)-> 
 		:timer.sleep(1000 * 60 * 10)
 		#IO.puts inspect(args)
@@ -60,7 +60,7 @@ hook ~r/^:(.*?)!(.*?)@(.*) MODE (.*) \+b (.*)$/, fn(socket, phrase, args) ->
 	#end, [socket, args])
 end
 
-hook ~r/^:(.*?)!(.*?)@(.*) KICK (.*?) #{Bridge.IRC.bot_name} :(.*)$/, fn(socket, phrase, args) ->
+hook ~r/^:(.*?)!(.*?)@(.*) KICK (.*?) #{Bridge.IRC.bot_name} :(.*)$/, fn(socket, _phrase, args) ->
 	Bridge.IRC.transmit(socket, "JOIN #{Enum.at(args, 3)}")
 end
 

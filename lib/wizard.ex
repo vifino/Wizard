@@ -23,7 +23,7 @@ defmodule Wizard do
 				Bridge.IRC.spawn(server, port, nickname, nil)
 			end
 		end
-		irc_con = Task.async(Bridge.IRC, :run, [socket, nickname])
+		irc_con = Task.async(Bridge.IRC, :run, [socket, nickname, Bridge.IRC.channel_data])
 
 		Code.require_file("wizard.exs")
 

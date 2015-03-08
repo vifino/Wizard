@@ -19,14 +19,14 @@ defmodule Bridge.IRC do
 	end
 
 	@doc "Main processing loopMain processing loop.."
-	def run(socket, nick) do
+	def run(socket, nick, channels) do
 		running = true
 		matcher = ~r/(.*)?\r\n/
 		try do
 			case :gen_tcp.recv(socket, 0) do
 				{ :ok, data } ->
 					res = Regex.scan(matcher, data) |> Enum.map(&(Enum.at(&1, 1)))
-					process(socket, res, nick, 0)
+					process(socket, res, nick, channels, 0)
 				{ :error, :closed } ->
 					running = false
 					IO.puts "The client closed the connection..."
@@ -35,18 +35,18 @@ defmodule Bridge.IRC do
 			e -> IO.puts inspect(e)
 		end
 		if running do
-			run(socket, nick)
+			run(socket, nick, channels)
 		end
 	end
 
-	def process(socket, res, nick, item) do
+	def process(socket, res, nick, channels, item) do
 		if Enum.at(res, item) do
-			process(socket, Enum.at(res, item, nick), nick)
-			process(socket, res, nick, item + 1)
+			process(socket, Enum.at(res, item, nick), nick, channels)
+			process(socket, res, nick, channels, item + 1)
 		end
 	end
 
-	def process(socket, data, nick) do
+	def process(socket, data, nick, channels) do
 		ping             = ~r/^PING/
 		motd_end         = ~r/^:(.*?) 376 (.*?)\/MOTD/
 		{ :ok, command } = Regex.compile("^#{nick}: (.*)$")
@@ -54,7 +54,7 @@ defmodule Bridge.IRC do
 
 		IO.puts "<-- #{data}"
 
-		if Regex.match?(motd_end, data), do: initialize(socket, channel_data, 0)
+		if Regex.match?(motd_end, data), do: initialize(socket, channels, 0)
 
 		if Regex.match?(ping, data), do: pong(socket, data)
 
