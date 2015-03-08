@@ -1,7 +1,7 @@
 import Wizard
 import Utils
 
-command "say (.*)", cmda(Enum.at(&1, 0))
+command "say (.*)", cmda("> " <> Enum.at(&1, 0))
 
 command "heya", fn (speaker, _chan, _socket) ->
 	greetings = [
@@ -23,7 +23,7 @@ end
 
 command "mirror me", cmd(String.reverse(&1))
 
-command "reverse (.*)", cmda(String.reverse(Enum.at(&1,0)))
+command "reverse (.*)", cmda("> " <> String.reverse(Enum.at(&1,0)))
 
 command "(.*) suck(.*)", cmdna("Doubt it.")
 

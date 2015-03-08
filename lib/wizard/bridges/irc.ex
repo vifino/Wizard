@@ -2,7 +2,7 @@ defmodule Bridge.IRC do
 	@name { :global, __MODULE__ }
 
 	@doc "Spawns the connection to the server and returns the socket."
-	def spawn(server, port, nickname, pass) do
+	def spawn(server, port, nickname, pass \\ nil) do
 		#serverdata = serverinfo
 		#server     = elem(serverdata, 0)
 		#port       = elem(serverdata, 1)
