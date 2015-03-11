@@ -33,11 +33,10 @@ defmodule Hooks do
 	def exec(socket, phrase, found, index, retdata \\ []) do
 		if Enum.at(found, index) do
 			ret = eval(socket, phrase, Enum.at(found, index))
-			retdata = exec(socket, phrase, found, index + 1, Enum.concat(retdata, [ret]))
+			exec(socket, phrase, found, index + 1, Enum.concat(retdata, [ret]))
 		end
-		retdata
 	end
-	
+
 	def eval(socket, phrase, found)do
 		{ regex, fun } = found
 		args = Regex.scan(regex, phrase, capture: :all_but_first) |> Enum.at(0)
