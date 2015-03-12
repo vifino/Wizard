@@ -30,6 +30,9 @@ defmodule Bridge.IRC do
 				{ :error, :closed } ->
 					running = false
 					IO.puts "The client closed the connection..."
+				{ :error, err} ->
+					IO.puts inspect(err)
+					System.halt(1)
 			end
 		rescue
 			e -> IO.puts inspect(e)
