@@ -72,24 +72,7 @@ defmodule IRC do
 
 					ret = Regex.run(command, content)
 					if ret do
-						command = Commands.find(Enum.at(ret, 1))
-						if command do
-							pattern = elem(command, 0)
-							func = elem(command, 1)
-							args = Regex.scan(pattern, Enum.at(ret, 1), capture: :all_but_first)
-							args = Enum.filter(args, &((Enum.count &1) > 0))
-
-							try do
-								if (Enum.count(args) > 0) do
-									result = func.(speaker_name, chan, socket, Enum.at(args, 0))
-								else
-									result = func.(speaker_name, chan, socket)
-								end
-								msg(socket, chan, result)
-							rescue
-								e -> msg(socket, chan, "Error: #{inspect e}")
-							end
-						end
+						Commands.run(socket, speaker_name, chan, ret)
 					end
 				end
 			end)
