@@ -14,9 +14,20 @@ end
 command "eval (.*)", fn (speaker, chan, socket, args) ->
 	if speaker == owner do
 		try do
-			inspect elem(Code.eval_string("import Wizard; import Utils; " <> Enum.at(args, 0), [speaker: speaker, chan: chan, socket: socket, args: Enum.at(args,0)]), 0)
+			inspect eval("import Wizard; import Utils; " <> Enum.at(args, 0), [speaker: speaker, chan: chan, socket: socket, args: Enum.at(args,0)])
 		rescue
 			e -> "Error: #{inspect e}"
+		end
+	end
+end
+
+command "erl (.*)", fn (speaker, chan, socket, args) ->
+	if speaker == owner do
+		{ret, res} = eval_erl(Enum.at(args, 0), [speaker: speaker, chan: chan, socket: socket, args: Enum.at(args,0)])
+		if ret == :ok do
+			pp res
+		else
+			"Error: #{inspect res}"
 		end
 	end
 end

@@ -2,11 +2,12 @@ defmodule Utils do
 	@compile {:inline}
 	#@on_load :reseed_rng
 
-  def reseed_rng do
+	# Math related stuff.
+	def reseed_rng do
 		<< a :: 32, b :: 32, c :: 32 >> = :crypto.rand_bytes(12)
 		:random.seed(a,b,c)
 		:ok
-  end
+	end
 
 	def rng() do
 		:random.uniform
@@ -16,7 +17,7 @@ defmodule Utils do
 		:random.uniform(seed)
 	end
 
-	def to_number(val) do   
+	def to_number(val) do
 		num = case val =~ "." do
 			true  -> Float.parse val
 			false -> Integer.parse val
@@ -28,7 +29,38 @@ defmodule Utils do
 		end
 	end
 
-	def pp(x) do 
+	# Eval stuff
+	def eval(code, valmap \\ []) do
+		elem(Code.eval_string(code, valmap), 0)
+	end
+	def eval_ex(code, valmap \\ []) do
+		eval(code, valmap)
+	end
+	def eval_erl(str) do
+		{:ok, tokens, _} = :erl_scan.string(to_char_list(str))
+		{ret, tmp} = :erl_parse.parse_exprs(tokens)
+		if ret == :ok do
+			{val, value, _} = :erl_eval.expr(hd(tmp), :erl_eval.new_bindings())
+			{:ok, value}
+		else
+			{:error, tmp}
+		end
+	end
+	def eval_erl(str, valmap \\ []) do
+		{:ok, tokens, _} = :erl_scan.string(to_char_list(str))
+		{ret, tmp} = :erl_parse.parse_exprs(tokens)
+		if ret == :ok do
+			valmap = Enum.map(valmap, fn({k,v}) -> {String.capitalize(to_string(k)), v} end)
+				|> Enum.map(fn({k,v}) -> {String.to_atom(k), v} end)
+			{_, value, _} = :erl_eval.expr(hd(tmp), valmap)
+			{:ok, value}
+		else
+			{:error, elem(tmp, 2)}
+		end
+	end
+
+	# Erlang pretty-printer. Like inspect. Just erlangs way of representing the data, not elixir's.
+	def pp(x) do
 		:io_lib.format("~p", [x])
 		|> :lists.flatten
 		|> :erlang.list_to_binary

@@ -3,11 +3,6 @@ defmodule Bridge.IRC do
 
 	@doc "Spawns the connection to the server and returns the socket."
 	def spawn(server, port, nickname, pass \\ nil) do
-		#serverdata = serverinfo
-		#server     = elem(serverdata, 0)
-		#port       = elem(serverdata, 1)
-		#nickname   = elem(serverdata, 2)
-
 		{ :ok, socket } = :gen_tcp.connect(:erlang.binary_to_list(server), port, [:binary, {:active, false}])
 		:ok = transmit(socket, "NICK #{nickname}")
 		:ok = transmit(socket, "USER #{nickname} #{server} #{nickname} :#{nickname}")
