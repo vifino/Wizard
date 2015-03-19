@@ -50,8 +50,13 @@ defmodule Utils do
 		{:ok, tokens, _} = :erl_scan.string(to_char_list(str))
 		{ret, tmp} = :erl_parse.parse_exprs(tokens)
 		if ret == :ok do
-			valmap = Enum.map(valmap, fn({k,v}) -> {String.capitalize(to_string(k)), v} end)
-				|> Enum.map(fn({k,v}) -> {String.to_atom(k), v} end)
+			valmap = Enum.map(valmap, fn({k, v}) ->
+				if is_atom(k) and (to_string(k) == String.capitalize(to_string(k))) do
+					{k, v}
+				else
+					{String.to_atom(String.capitalize(to_string(k))), v}
+				end
+			end)
 			{_, value, _} = :erl_eval.expr(hd(tmp), valmap)
 			{:ok, value}
 		else

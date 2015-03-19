@@ -34,9 +34,9 @@ defmodule Wizard do
 
 	@doc "Adds a command matched by string `phrase`, which is a regex. Runs `func` if it matched."
 	def command(phrase, func) do
-	  if is_map phrase do
+		if is_map phrase do
 			Commands.add({ phrase, func })
-	  else
+		else
 			{ :ok, pattern } = Regex.compile(phrase)
 			Commands.add({ pattern, func })
 		end

@@ -23,11 +23,11 @@ end
 
 command "erl (.*)", fn (speaker, chan, socket, args) ->
 	if speaker == owner do
-		{ret, res} = eval_erl(Enum.at(args, 0), [speaker: speaker, chan: chan, socket: socket, args: Enum.at(args,0)])
+		{ret, res} = eval_erl(Enum.at(args, 0), [Speaker: speaker, Chan: chan, Socket: socket, Args: Enum.at(args,0)])
 		if ret == :ok do
 			pp res
 		else
-			"Error: #{inspect res}"
+			"Error: #{to_string(Enum.at(res, 0)) <> to_string(Enum.at(res, 1))}"
 		end
 	end
 end
