@@ -16,6 +16,24 @@ defmodule Utils do
 		:random.uniform(seed)
 	end
 
+	def to_number(val) do   
+		num = case val =~ "." do
+			true  -> Float.parse val
+			false -> Integer.parse val
+		end
+
+		case num do
+			:error   -> nil
+			{num, _} -> num
+		end
+	end
+
+	def pp(x) do 
+		:io_lib.format("~p", [x])
+		|> :lists.flatten
+		|> :erlang.list_to_binary
+	end
+
 	@doc "Runs the string `command` as a shell command in /bin/sh and returns the result."
 	def sh(command) when is_bitstring command do
 		if String.strip(command) != "" do
@@ -40,7 +58,7 @@ defmodule Utils do
 		end
 	end
 
-	def quote_str(str) do
+	defp quote_str(str) do
 		str = str
 			|> replace("\"", "\\\"")
 			|> replace("\\", "\\\\")

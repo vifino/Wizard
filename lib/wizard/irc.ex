@@ -1,4 +1,4 @@
-defmodule IRC do
+defmodule Bridge.IRC do
 	@name { :global, __MODULE__ }
 
 	@doc "Spawns the connection to the server and returns the socket."
