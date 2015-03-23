@@ -23,12 +23,13 @@ defmodule IRC do
 					process(socket, res, nick, channels, 0)
 					run(socket, nick, channels)
 				{ :error, :closed } ->
-					running = false
 					IO.puts "The client closed the connection..."
+					System.halt(1)
 				{ :error, err} ->
 					IO.puts inspect(err)
 					System.halt(1)
 			end
+			run(socket, nick, channels)
 		rescue
 			e -> IO.puts inspect(e)
 		end
@@ -96,7 +97,11 @@ defmodule IRC do
 	def transmit(socket, msg) do
 		if is_bitstring msg do
 			IO.puts "--> #{msg}"
-			Port.command(socket, "#{msg}\r\n")
+			if Port.command(socket, "#{msg}\r\n") == true do
+				:ok
+			else
+				:error
+			end
 		else
 			if is_list msg do
 				transmit(socket, msg, 0)
