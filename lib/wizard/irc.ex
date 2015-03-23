@@ -15,13 +15,13 @@ defmodule IRC do
 
 	@doc "Main processing loopMain processing loop.."
 	def run(socket, nick, channels) do
-		running = true
 		matcher = ~r/(.*?)\r\n/
 		try do
 			case :gen_tcp.recv(socket, 0) do
 				{ :ok, data } ->
 					res = Regex.scan(matcher, data) |> Enum.map(&(Enum.at(&1, 1)))
 					process(socket, res, nick, channels, 0)
+					run(socket, nick, channels)
 				{ :error, :closed } ->
 					running = false
 					IO.puts "The client closed the connection..."
@@ -31,9 +31,6 @@ defmodule IRC do
 			end
 		rescue
 			e -> IO.puts inspect(e)
-		end
-		if running do
-			run(socket, nick, channels)
 		end
 	end
 
@@ -99,7 +96,7 @@ defmodule IRC do
 	def transmit(socket, msg) do
 		if is_bitstring msg do
 			IO.puts "--> #{msg}"
-			:gen_tcp.send(socket, "#{msg}\r\n")
+			Port.command(socket, "#{msg}\r\n")
 		else
 			if is_list msg do
 				transmit(socket, msg, 0)
