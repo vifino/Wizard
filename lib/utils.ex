@@ -1,6 +1,5 @@
 defmodule Utils do
 	@compile {:inline}
-	#@on_load :reseed_rng
 
 	# Math related stuff.
 	def reseed_rng do
@@ -36,16 +35,6 @@ defmodule Utils do
 	def eval_ex(code, valmap \\ []) do
 		eval(code, valmap)
 	end
-	def eval_erl(str) do
-		{:ok, tokens, _} = :erl_scan.string(to_char_list(str))
-		{ret, tmp} = :erl_parse.parse_exprs(tokens)
-		if ret == :ok do
-			{val, value, _} = :erl_eval.expr(hd(tmp), :erl_eval.new_bindings())
-			{:ok, value}
-		else
-			{:error, tmp}
-		end
-	end
 	def eval_erl(str, valmap \\ []) do
 		{:ok, tokens, _} = :erl_scan.string(to_char_list(str))
 		{ret, tmp} = :erl_parse.parse_exprs(tokens)
@@ -77,12 +66,6 @@ defmodule Utils do
 			to_string(:os.cmd(to_char_list(command)))
 		end
 	end
-	@doc "Runs the string `command` as a shell command in bash and returns the result."
-	def bash(command) when is_bitstring command do
-		if String.strip(command) != "" do
-			elem(System.cmd("bash", ["-c", command], [{:stderr_to_stdout, true}]), 0)
-		end
-	end
 	@doc "Runs the string `command` as a shell command with `pipe_input` piped into it and returns the result."
 	def sh(pipe_input, command) when is_bitstring(pipe_input) and is_bitstring(command) do
 		if String.strip(command) != "" do
@@ -92,6 +75,14 @@ defmodule Utils do
 			else
 				sh(command)
 			end
+		end
+	end
+
+	@doc "Runs the string `command` as a system command without a shell."
+	def nosh(command) when is_bitstring command do
+		if String.strip(command) != "" do
+			[cmd | opts] = OptionParser.split(command)
+			elem(System.cmd(cmd, opts), 0)
 		end
 	end
 
