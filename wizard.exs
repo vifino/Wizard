@@ -38,6 +38,12 @@ command "reverse (.*)", cmda("> " <> String.reverse(Enum.at(&1,0)))
 
 command "(.*) suck(.*)", cmdna("Doubt it.")
 
+command ~r/(g|j)(e*?)(s|b)us/i, fn(_, chan, socket, _) ->
+	IRC.msg(socket, chan, "ಠ_ಠ")
+	IRC.msg(socket, chan, "¯|¯⌠")
+	"/`\\|"
+end
+
 command "(.*)\\?", fn (_speaker, _chan, _socket, _args) ->
 	responses = [
 		"It is certain.", "It is decidedly so.", "Without a doubt.", "Yes definitely.", "You may rely on it.",

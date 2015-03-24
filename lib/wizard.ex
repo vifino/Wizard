@@ -37,7 +37,7 @@ defmodule Wizard do
 		if is_map phrase do
 			Commands.add({ phrase, func })
 		else
-			{ :ok, pattern } = Regex.compile(phrase)
+			{ :ok, pattern } = Regex.compile(phrase, "i")
 			Commands.add({ pattern, func })
 		end
 	end
