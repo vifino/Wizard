@@ -60,6 +60,11 @@ defmodule Utils do
 		|> :erlang.list_to_binary
 	end
 
+	@doc "IO.puts inspect(x)"
+	def dbg(x) do
+		IO.puts inspect(x)
+	end
+
 	@doc "Runs the string `command` as a shell command in /bin/sh and returns the result."
 	def sh(command) when is_bitstring command do
 		if String.strip(command) != "" do

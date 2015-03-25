@@ -38,10 +38,30 @@ command "reverse (.*)", cmda("> " <> String.reverse(Enum.at(&1,0)))
 
 command "(.*) suck(.*)", cmdna("Doubt it.")
 
-command ~r/(g|j)(e*?)(s|b)us/i, fn(_, chan, socket, _) ->
-	IRC.msg(socket, chan, "ಠ_ಠ")
-	IRC.msg(socket, chan, "¯|¯⌠")
-	"/`\\|"
+#command ~r/(g|j)(e*?)(s|z|b)(u*?)s/i, fn(_, chan, socket, _) ->
+#	IRC.msg(socket, chan, "ಠ_ಠ")
+#	IRC.msg(socket, chan, "¯|¯⌠")
+#	"/`\\|"
+#end
+
+command ~r/(g|j)(e*?)(s|z|b)(u*?)s(ify) (.*)/i, fn(_speaker, chan, socket, args) ->
+	dbg(args)
+	if Enum.at(args, 5) != nil do
+		face = Enum.at(args, 5)
+		len = String.length(face)
+		if len == 3 do
+			IRC.msg(socket, chan, " #{face}")
+			IRC.msg(socket, chan, " ¯|¯⌠")
+			" /`\\|"
+		else
+			if len >= 4 do
+				padding = String.duplicate(" ", div(len-3,2))
+				IRC.msg(socket, chan, " #{face}")
+				IRC.msg(socket, chan, " #{padding}¯|¯⌠")
+				" #{padding}/`\\|"
+			end
+		end
+	end
 end
 
 command "(.*)\\?", fn (_speaker, _chan, _socket, _args) ->
