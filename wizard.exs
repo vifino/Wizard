@@ -2,6 +2,8 @@
 import Wizard
 import Utils
 
+#AI.enable
+
 command "say (.*)", cmda("> " <> Enum.at(&1, 0))
 
 command "heya", fn (speaker, _chan, _socket) ->

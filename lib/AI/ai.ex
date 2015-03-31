@@ -1,4 +1,4 @@
-defmodule AI do
+defmodule AIScoring do
 	import Utils
 	# Scoring AI.
 	# Memory is [{text, prio, reply}]
@@ -23,14 +23,15 @@ defmodule AI do
 
 	def think(memory, sentence) do
 		#if is_port memory do
-		{bestScore, {text, priority, reply}} = find_answer(KVStore.get(memory, "memory"), sentence)
-		KVStore.put(memory, "bestScore", bestScore)
-		if bestScore <= 7 do
-			KVStore.put(memory, "lastSentence", reply)
-			reply
-		else
-			KVStore.put(memory, "lastSentence", text)
-			text
+		ret = find_answer(memory, sentence)
+		if ret != nil do
+			if KVStore.get(memory, "bestScore") <= 7 do
+				KVStore.put(memory, "lastSentence", elem(ret, 2))
+				elem(ret, 2)
+			else
+				KVStore.put(memory, "lastSentence", elem(ret, 0))
+				elem(ret, 0)
+			end
 		end
 		#else
 		#	if length(memory) != 0 do
@@ -47,22 +48,21 @@ defmodule AI do
 	end
 
 	def find_answer(memory, input) do
-		scores = Enum.map(memory, fn({text, _, _})->
+		scores = Enum.map(KVStore.get(memory, "memory"), fn({text, _, _})->
 			score(text, input)
 		end)
-		best = scores |> Enum.min
-		scores
-		|> Enum.with_index
+		best = Enum.min scores
+		KVStore.put(memory, "bestScore", best)
+		Enum.with_index(scores)
 		|> Enum.map(fn({val, index})->
 			if val == best do
-				{best, Enum.at(memory, index)}
+				Enum.at(KVStore.get(memory, "memory"), index)
 			end
 		end)
 		|> Enum.at(0)
 	end
 
 	def score(a, b) do
-		require(IEx)
 		if not (len(b) == 0 or len(a) == 0) do
 			matrix = KVStore.new
 			0..len(b) |> Enum.each(fn(x) ->

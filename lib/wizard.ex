@@ -11,6 +11,8 @@ defmodule Wizard do
 
 		Commands.start_link
 		Hooks.start_link
+		Global.init
+
 		serverdata = IRC.serverinfo
 		server     = elem(serverdata, 0)
 		port       = elem(serverdata, 1)
