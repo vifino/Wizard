@@ -1,3 +1,4 @@
+# Put your config stuff here.
 import Wizard
 import Utils
 
