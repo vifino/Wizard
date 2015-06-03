@@ -2,7 +2,7 @@
 import Wizard
 import Utils
 
-#AI.enable
+AI.enable
 
 command "say (.*)", cmda("> " <> Enum.at(&1, 0))
 

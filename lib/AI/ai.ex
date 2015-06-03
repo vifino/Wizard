@@ -65,33 +65,33 @@ defmodule AIScoring do
 	def score(a, b) do
 		if not (len(b) == 0 or len(a) == 0) do
 			matrix = KVStore.new
-			0..len(b) |> Enum.each(fn(x) ->
+			for x <- 0..len(b) do
 				KVStore.put(matrix, x, new_mtx(x))
-			end)
+			end
 			#IEx.pry
-			0..len(a) |> Enum.each(&(
-				mtx(matrix, 0, &1, &1)
-			))
+			for x <- 0..len(a) do
+				mtx(matrix, 0, x, x)
+			end
 			#IEx.pry
-			1..len(b) |> Enum.each(fn(i) ->
-				1..len(a) |> Enum.each(fn(j) ->
+			for i <- 1..len(b) do
+				for j <- 1..len(a) do
 					if at(b, i-1) == at(a, j-1) do
 						mtx(matrix, i, j, mtxa(matrix, i-1, j-1))
 					else
 						a = mtxa(matrix, i-1, j-1) + 1
 						b = mtxa(matrix, i,   j-1) + 1
-						c = mtxa(matrix, i-1, j  )	 + 1
+						c = mtxa(matrix, i-1, j  ) + 1
 						mtx(matrix, i, j,
 							min(a, min(b, c))
 						)
 					end
-				end)
-			end)
+				end
+			end
 			#IEx.pry
 			res = mtxa(matrix, len(b), len(a))
-			0..len(b) |> Enum.each(fn(mat) ->
+			for mat <- 0..len(b) do
 				get(matrix, mat) |> KVStore.close
-			end)
+			end
 			KVStore.close(matrix)
 			res
 		else
