@@ -6,9 +6,9 @@ AI.enable
 
 command "say (.*)", cmda("> " <> Enum.at(&1, 0))
 
-command "heya", fn (speaker, _chan, _socket) ->
+command "(hi|heya|hello|morning|sup)", fn (speaker, _chan, _socket) ->
 	greetings = [
-		"yo", "backatcha", "aight", "hi", "g'day",
+		"yo", "backatcha", "aight", "hi", "g'day", "eyy", "ayy", "sup", "morning", "evening"
 	]
 	greeting = Enum.at greetings, round(rng ((Enum.count greetings) -1))
 	"#{greeting} #{speaker}"

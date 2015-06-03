@@ -1,5 +1,5 @@
 defmodule AIScoring do
-	import Utils
+	#import Utils
 	# Scoring AI.
 	# Memory is [{text, prio, reply}]
 
