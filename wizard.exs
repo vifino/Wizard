@@ -82,7 +82,7 @@ command "(.*)\\?", fn (_speaker, _chan, _socket, _args) ->
 end
 
 # Funny commands :D
-hook ~r/:(.*?)!(.*?)@(.*) PRIVMSG (.*) :(.*?)kick(\s*?)me(.*?)/i, fn(socket, _phrase, args) ->
+hook ~r/:(.*?)!(.*?)@(.*) PRIVMSG (.*) :^kick(\s*?)me$/i, fn(socket, _phrase, args) ->
 	IRC.transmit(socket, "KICK #{Enum.at(args, 3)} #{Enum.at(args, 0)} :No problem.")
 end
 
