@@ -75,10 +75,11 @@ defmodule IRC do
 							try do
 								if (Enum.count(args) > 0) do
 									result = func.(speaker_name, chan, socket, Enum.at(args, 0))
+									msg(socket, chan, result)
 								else
 									result = func.(speaker_name, chan, socket)
+									msg(socket, chan, result)
 								end
-								msg(socket, chan, result)
 							rescue
 								e -> msg(socket, chan, "Error: #{inspect e}")
 							end
