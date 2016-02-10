@@ -4,9 +4,11 @@ import Utils
 
 AI.enable
 
-command "say (.*)", cmda("> " <> Enum.at(&1, 0))
+command "say (.*)", fn (_speaker, _chan, _socket, args) ->
+  "> " <> Enum.at(args, 0)
+end
 
-command "(hi|heya|hello|morning|sup)", fn (speaker, _chan, _socket) ->
+command "(hi|heya|hello|morning|sup)", fn (speaker, _chan, _socket, _args) ->
 	greetings = [
 		"yo", "backatcha", "aight", "hi", "g'day", "eyy", "ayy", "sup", "morning", "evening"
 	]
@@ -40,12 +42,6 @@ command "mirror me", cmd(String.reverse(&1))
 command "reverse (.*)", cmda("> " <> String.reverse(Enum.at(&1,0)))
 
 command "(.*) suck(.*)", cmdna("Doubt it.")
-
-#command ~r/(g|j)(e*?)(s|z|b)(u*?)s/i, fn(_, chan, socket, _) ->
-#	IRC.msg(socket, chan, "ಠ_ಠ")
-#	IRC.msg(socket, chan, "¯|¯⌠")
-#	"/`\\|"
-#end
 
 command ~r/(g|j)(e*?)(s|z|b)(u*?)s(ify) (.*)/i, fn(_speaker, chan, socket, args) ->
 	dbg(args)
